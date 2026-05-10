@@ -9,35 +9,57 @@ import requests # API istekleri için eklendi
 # --- PAGE CONFIGURATION ---
 st.set_page_config(page_title="Top 5 Leagues DSS | Elite", page_icon="🌍", layout="wide")
 
-# --- ADVANCED UI/UX CUSTOMIZATION (CYBER DARK THEME) ---
+# --- ADVANCED UI/UX CUSTOMIZATION (CYBER DARK THEME + MOBILE RESPONSIVE) ---
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
     
     html, body, [class*="css"] { font-family: 'Inter', sans-serif !important; }
+    
+    /* Ana Arka Plan */
     .stApp { background: linear-gradient(135deg, #020617 0%, #0F172A 50%, #1E293B 100%); color: #F8FAFC; }
     
-    /* Sidebar Styling */
-    [data-testid="stSidebar"] { background-color: rgba(2, 6, 23, 0.7); border-right: 1px solid #334155; }
-    .group-header { color: #FFFFFF !important; font-size: 28px !important; font-weight: 800 !important; letter-spacing: 2px; margin-bottom: 0px; }
+    /* MOBİL DÜZELTME: Sidebar artık saydam değil, tam katı renk. Arkadaki yazılar birbirine girmez. */
+    [data-testid="stSidebar"] { 
+        background-color: #020617 !important; 
+        border-right: 1px solid #334155; 
+        z-index: 999999;
+    }
+    
+    /* Mobil Sidebar açma butonunun arkasını düzeltme */
+    [data-testid="stSidebarCollapsedControl"] {
+        background-color: #020617 !important;
+        border-radius: 5px;
+    }
 
-    /* Glassmorphism Metric Cards */
+    .group-header { color: #FFFFFF !important; font-size: 28px !important; font-weight: 800 !important; letter-spacing: 2px; margin-bottom: 0px; text-align: center;}
+
+    /* Glassmorphism Metric Cards - Mobilde daha okunaklı arka plan */
     div[data-testid="stMetric"] {
-        background: rgba(30, 41, 59, 0.5); border: 1px solid #38BDF8; padding: 20px; border-radius: 16px;
-        backdrop-filter: blur(10px); transition: transform 0.3s ease;
+        background: rgba(30, 41, 59, 0.85); 
+        border: 1px solid #38BDF8; 
+        padding: 20px; 
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+        transition: transform 0.3s ease;
     }
     div[data-testid="stMetric"]:hover { transform: translateY(-5px); border-color: #0EA5E9; }
 
-    /* Tabs Styling */
-    .stTabs [data-baseweb="tab-list"] { gap: 12px; border-bottom: 1px solid #334155; }
+    /* Tabs Styling - Mobilde taşmayı engelleyen 'flex-wrap' ayarı eklendi */
+    .stTabs [data-baseweb="tab-list"] { gap: 12px; border-bottom: 1px solid #334155; flex-wrap: wrap; }
     .stTabs [data-baseweb="tab"] { color: #94A3B8; font-weight: 600; padding: 12px 20px; }
     .stTabs [aria-selected="true"] { color: #38BDF8; border-bottom: 2px solid #38BDF8; }
     
     h1, h2, h3 { color: #FFFFFF !important; font-weight: 700 !important; }
-    .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-right: 5px; color: white; }
+    
+    /* Etiketleri mobilde alt alta düzgün dizmek için inline-block ayarı */
+    .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-right: 5px; color: white; display: inline-block; margin-bottom: 5px;}
     .badge-wonder { background: linear-gradient(90deg, #A855F7, #EC4899); }
     .badge-elite { background: linear-gradient(90deg, #EF4444, #F97316); }
     .badge-maestro { background: linear-gradient(90deg, #3B82F6, #06B6D4); }
+    
+    /* Resimleri mobil ekrana göre otomatik sığdırma */
+    img { max-width: 100%; height: auto; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -48,7 +70,6 @@ TEAM_LOGOS = {
 
 PLAYER_FACES = {
     "Erling Haaland": "https://resources.premierleague.com/premierleague/photos/players/250x250/p223094.png",
-    
 }
 
 def get_team_logo(team_name):
