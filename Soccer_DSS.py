@@ -9,6 +9,12 @@ import base64
 import os 
 import difflib 
 
+# --- KULLANICILARI DARK MODA ZORLAMA (Otomatik Ayar Dosyası) ---
+if not os.path.exists(".streamlit/config.toml"):
+    os.makedirs(".streamlit", exist_ok=True)
+    with open(".streamlit/config.toml", "w", encoding="utf-8") as f:
+        f.write("[theme]\nbase=\"dark\"\n")
+
 # --- PAGE CONFIGURATION ---
 st.set_page_config(page_title="Top 5 Leagues DSS | Elite", page_icon="🌍", layout="wide")
 
@@ -20,11 +26,14 @@ st.markdown("""
     html, body, [class*="css"] { font-family: 'Inter', sans-serif !important; }
     .stApp { background: linear-gradient(135deg, #020617 0%, #0F172A 50%, #1E293B 100%); color: #F8FAFC; }
     
+    
+    /* MOBİL DÜZELTME: Sidebar artık saydam değil, tam katı renk. Arkadaki yazılar birbirine girmez. */
     [data-testid="stSidebar"] { 
         background-color: #020617 !important; 
         border-right: 1px solid #334155; 
         z-index: 999999;
     }
+    
     [data-testid="stSidebarCollapsedControl"] {
         background-color: #020617 !important;
         border-radius: 5px;
@@ -32,6 +41,7 @@ st.markdown("""
 
     .group-header { color: #FFFFFF !important; font-size: 28px !important; font-weight: 800 !important; letter-spacing: 2px; margin-bottom: 0px; text-align: center;}
 
+    /* Glassmorphism Metric Cards */
     div[data-testid="stMetric"] {
         background: rgba(30, 41, 59, 0.85); 
         border: 1px solid #38BDF8; 
@@ -42,6 +52,7 @@ st.markdown("""
     }
     div[data-testid="stMetric"]:hover { transform: translateY(-5px); border-color: #0EA5E9; }
 
+    /* Tabs Styling - Mobilde taşmayı engelleyen 'flex-wrap' ayarı eklendi */
     .stTabs [data-baseweb="tab-list"] { gap: 12px; border-bottom: 1px solid #334155; flex-wrap: wrap; }
     .stTabs [data-baseweb="tab"] { color: #94A3B8; font-weight: 600; padding: 12px 20px; }
     .stTabs [aria-selected="true"] { color: #38BDF8; border-bottom: 2px solid #38BDF8; }
@@ -57,6 +68,29 @@ st.markdown("""
     img { max-width: 100%; height: auto; }
 </style>
 """, unsafe_allow_html=True)
+
+# --- YARDIMCI FONKSİYON: LOKAL RESİMLERİ BASE64'E ÇEVİRME ---
+def get_local_image_base64(filepath):
+    if os.path.exists(filepath):
+        with open(filepath, "rb") as image_file:
+            return base64.b64encode(image_file.read()).decode()
+    return None
+
+# --- YENİ EKLENTİ: LİG BAYRAKLARI ---
+def get_flag_logo(league_name):
+    flag_map = {
+        "Premier League": "england.png",
+        "La Liga": "spain.png",
+        "Serie A": "italy.png",
+        "Bundesliga": "germany.png",
+        "Ligue 1": "france.png"
+    }
+    if league_name in flag_map:
+        base64_img = get_local_image_base64(f"image/{flag_map[league_name]}")
+        if base64_img:
+            # Emoji boyutu için width='20', metinle düzgün hizalama için vertical-align eklendi
+            return f"<img src='data:image/png;base64,{base64_img}' width='24' style='vertical-align: middle; margin-right: 6px; border-radius: 3px;'>"
+    return ""
 
 # --- 1. TAKIM LOGOLARI İÇİN AKILLI LOKAL (KLASÖR) SİSTEMİ ---
 TEAM_MANUAL_MAP = {
@@ -132,9 +166,14 @@ def get_player_face(player_name):
 @st.cache_data
 def load_data():
     df = pd.read_csv('players_data-2024_2025.csv')
+    
+    # Emojiler temizlendi, saf metne çevrildi
     league_map = {
-        'eng Premier League': '🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League', 'es La Liga': '🇪🇸 La Liga',
-        'it Serie A': '🇮🇹 Serie A', 'de Bundesliga': '🇩🇪 Bundesliga', 'fr Ligue 1': '🇫🇷 Ligue 1'
+        'eng Premier League': 'Premier League', 
+        'es La Liga': 'La Liga',
+        'it Serie A': 'Serie A', 
+        'de Bundesliga': 'Bundesliga', 
+        'fr Ligue 1': 'Ligue 1'
     }
     df = df[df['Comp'].isin(league_map.keys())].copy()
     df['Comp'] = df['Comp'].map(league_map)
@@ -185,9 +224,16 @@ def calculate_player_rating(p, df_full):
     return round(score, 1)
 
 # --- SIDEBAR (GROUP 6) ---
+sidebar_logo = get_local_image_base64("image/SoccerDSS.png")
+if sidebar_logo:
+    st.sidebar.markdown(f"""
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="data:image/png;base64,{sidebar_logo}" style="width: 150px; height: auto; border-radius: 10px;">
+        </div>
+    """, unsafe_allow_html=True)
+
 st.sidebar.markdown('<p class="group-header">GROUP 6</p>', unsafe_allow_html=True)
 with st.sidebar.expander("Team Members", expanded=True):
-    # LinkedIn linkleri eklendi. Tema rengine uyumlu ve yeni sekmede açılacak şekilde ayarlandı.
     st.markdown("""
     • <a href="https://www.linkedin.com/in/ahmet-tar%C4%B1k-orhan/" target="_blank" style="color: #38BDF8; text-decoration: none;">Ahmet Tarık Orhan</a><br><br>
     • <a href="https://www.linkedin.com/in/ali-eren-kurt-0842a7333" target="_blank" style="color: #38BDF8; text-decoration: none;">Ali Eren Kurt</a><br><br>
@@ -214,15 +260,22 @@ analysis_mode = st.sidebar.radio("🔍 Navigation:", ["📊 Overview", "👤 Pla
 # --- MAIN CONTENT ---
 if analysis_mode == "📊 Overview":
     
+    app_logo_base64 = get_local_image_base64("image/SoccerDSS.png")
+    if app_logo_base64:
+        logo_html = f"<img src='data:image/png;base64,{app_logo_base64}' width='60' style='vertical-align: middle; margin-right: 15px;'>"
+    else:
+        logo_html = "⚽ " 
+
     if selected_team != "All Teams":
         col_title, col_logo = st.columns([5, 1])
         with col_title:
-            st.title(f"⚽ Intelligence Hub: {selected_team}")
+            st.markdown(f"<h1 style='display: flex; align-items: center; color: #FFFFFF !important; font-weight: 700 !important; margin: 0;'>{logo_html}Intelligence Hub: {selected_team}</h1>", unsafe_allow_html=True)
             st.markdown("Leverage data analytics for squad planning, performance evaluation, and predictive modeling.")
         with col_logo:
             st.markdown(f"<div style='text-align: right; padding-top: 15px;'><img src='{get_team_logo(selected_team)}' width='80' style='border-radius:10px;'></div>", unsafe_allow_html=True)
     else:
-        st.title(f"⚽ Intelligence Hub: {selected_league}")
+        flag_html = get_flag_logo(selected_league) if selected_league != "All Europe (Top 5)" else ""
+        st.markdown(f"<h1 style='display: flex; align-items: center; color: #FFFFFF !important; font-weight: 700 !important; margin: 0;'>{logo_html}Intelligence Hub: {flag_html}{selected_league}</h1>", unsafe_allow_html=True)
         st.markdown("Leverage data analytics for squad planning, performance evaluation, and predictive modeling.")
     
     tab1, tab2, tab3, tab4 = st.tabs(["📊 Descriptive", "🧪 Diagnostic (What-If)", "🔮 Predictive", "💡 Prescriptive"])
@@ -377,7 +430,8 @@ elif analysis_mode == "👤 Player Insight":
         
     with col_info:
         st.markdown(f"<h2>{player} {badges}</h2>", unsafe_allow_html=True)
-        st.markdown(f"**League:** {p['Comp']} &nbsp;|&nbsp; **Squad:** <img src='{get_team_logo(p['Squad'])}' width='24' style='vertical-align:middle; border-radius:4px;'> {p['Squad']}", unsafe_allow_html=True)
+        flag_html = get_flag_logo(p['Comp'])
+        st.markdown(f"**League:** {flag_html}{p['Comp']} &nbsp;|&nbsp; **Squad:** <img src='{get_team_logo(p['Squad'])}' width='24' style='vertical-align:middle; border-radius:4px;'> {p['Squad']}", unsafe_allow_html=True)
         st.markdown(f"**Position:** {p['Pos']} &nbsp;|&nbsp; **Age:** {int(p['Age'])}")
         st.markdown(f"**Appearances:** {int(p['MP'])} *(Starts: {int(p['Starts'])})* &nbsp;|&nbsp; **Minutes Played:** {int(p['Min'])}")
     
