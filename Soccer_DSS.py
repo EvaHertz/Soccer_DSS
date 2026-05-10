@@ -187,7 +187,13 @@ def calculate_player_rating(p, df_full):
 # --- SIDEBAR (GROUP 6) ---
 st.sidebar.markdown('<p class="group-header">GROUP 6</p>', unsafe_allow_html=True)
 with st.sidebar.expander("Team Members", expanded=True):
-    st.markdown("• Ahmet Tarık Orhan\n\n• Ali Eren Kurt\n\n• Mustafa Düşünceli\n\n• Ahmet Can Vurmaz")
+    # LinkedIn linkleri eklendi. Tema rengine uyumlu ve yeni sekmede açılacak şekilde ayarlandı.
+    st.markdown("""
+    • <a href="https://www.linkedin.com/in/ahmet-tar%C4%B1k-orhan/" target="_blank" style="color: #38BDF8; text-decoration: none;">Ahmet Tarık Orhan</a><br><br>
+    • <a href="https://www.linkedin.com/in/ali-eren-kurt-0842a7333" target="_blank" style="color: #38BDF8; text-decoration: none;">Ali Eren Kurt</a><br><br>
+    • <a href="https://www.linkedin.com/in/mustafa-d%C3%BC%C5%9F%C3%BCnceli-0139a822a/" target="_blank" style="color: #38BDF8; text-decoration: none;">Mustafa Düşünceli</a><br><br>
+    • Ahmet Can Vurmaz
+    """, unsafe_allow_html=True)
 
 st.sidebar.markdown("---")
 st.sidebar.title("⚙️ Control Panel")
@@ -246,12 +252,10 @@ if analysis_mode == "📊 Overview":
             fig2.update_layout(template="plotly_dark", paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", showlegend=False)
             st.plotly_chart(fig2, use_container_width=True)
 
-    # 🌟 GELİŞMİŞ WHAT-IF SENARYOSU BAŞLANGICI 🌟
     with tab2:
         st.subheader("🧪 Tactical Scenario Engine (What-If)")
         st.markdown("Simulate the impact of different coaching philosophies and tactical shifts on team output and end-of-season standings.")
         
-        # 1. Taktik Şablon Seçimi
         tactical_preset = st.selectbox("📋 Apply Tactical Preset:", [
             "Custom (Manual Adjustments)", 
             "⚡ Gegenpressing (High Intensity & Pressing)", 
@@ -259,7 +263,6 @@ if analysis_mode == "📊 Overview":
             "🏹 Direct Counter-Attack (Vertical & Finishing)"
         ])
         
-        # Seçilen şablona göre varsayılan değişkenler
         v_xg, v_xag, v_tkl, v_cmp = 0, 0, 0, 0
         if "Gegenpressing" in tactical_preset:
             v_xg, v_xag, v_tkl, v_cmp = 5, 10, 35, -5
@@ -279,7 +282,6 @@ if analysis_mode == "📊 Overview":
         with col_s4:
             cmp_imp = st.slider("Possession Drills (+% Cmp%)", -25, 50, v_cmp)
 
-        # Hesaplamalar
         curr_xg = filtered_df['xG'].sum()
         curr_xag = filtered_df['xAG'].sum()
         curr_tklw = filtered_df['TklW'].sum()
@@ -288,11 +290,10 @@ if analysis_mode == "📊 Overview":
         new_xg = curr_xg * (1 + (xg_imp / 100))
         new_xag = curr_xag * (1 + (xag_imp / 100))
         new_tklw = curr_tklw * (1 + (def_imp / 100))
-        new_cmp = min(100.0, curr_cmp * (1 + (cmp_imp / 100))) # Pas %100'ü geçemez
+        new_cmp = min(100.0, curr_cmp * (1 + (cmp_imp / 100)))
 
         st.markdown("---")
         
-        # Sonuç Metrikleri
         sc1, sc2, sc3, sc4 = st.columns(4)
         sc1.metric("Simulated xG", f"{new_xg:.1f}", delta=f"{new_xg - curr_xg:+.1f}", delta_color="normal")
         sc2.metric("Simulated xAG", f"{new_xag:.1f}", delta=f"{new_xag - curr_xag:+.1f}", delta_color="normal")
@@ -303,11 +304,10 @@ if analysis_mode == "📊 Overview":
         col_chart, col_impact = st.columns([1.5, 1])
 
         with col_chart:
-            # Takım DNA Radarı (Mevcut vs Simüle)
             def norm_team(val, orig): return 100 * (val/orig) if orig > 0 else 100
             
             radar_cats = ['Attacking (xG)', 'Creativity (xAG)', 'Passing (Cmp%)', 'Defensive (TklW)']
-            orig_vals = [100, 100, 100, 100] # Baseline 100
+            orig_vals = [100, 100, 100, 100]
             sim_vals = [norm_team(new_xg, curr_xg), norm_team(new_xag, curr_xag), norm_team(new_cmp, curr_cmp), norm_team(new_tklw, curr_tklw)]
 
             fig_sim_radar = go.Figure()
@@ -326,18 +326,15 @@ if analysis_mode == "📊 Overview":
             st.subheader("📈 Business & League Impact")
             st.markdown("Based on historical data models, how does this tactical shift affect the end-of-season outcomes?")
             
-            # Puan & Etki Algoritması
-            gd_shift = (new_xg - curr_xg) + ((new_tklw - curr_tklw) * 0.08) # Kabaca Goal Difference etkisi
-            pt_shift = gd_shift * 0.65 # Tahmini Puan etkisi (1 GD ≈ 0.65 Puan)
+            gd_shift = (new_xg - curr_xg) + ((new_tklw - curr_tklw) * 0.08) 
+            pt_shift = gd_shift * 0.65 
             
             st.info(f"⚽ **Est. Goal Difference:** {gd_shift:+.1f} goals")
             st.success(f"🏆 **Est. League Points:** {pt_shift:+.1f} points")
             
-            # Maliyet Simülasyonu
             max_change = max(abs(xg_imp), abs(xag_imp), abs(def_imp), abs(cmp_imp))
             est_cost = max(1.5, (max_change * 0.5))
             st.warning(f"💰 **Financial Implication:** Targeting these metric shifts requires an estimated **€{est_cost:.1f}M** investment in specialized coaching staff or equipment.")
-    # 🌟 WHAT-IF SENARYOSU BİTİŞİ 🌟
 
     with tab3:
         st.subheader("End of Season Forecast (Matchweek 38)")
