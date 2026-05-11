@@ -147,7 +147,7 @@ PLAYER_FACES = {
     "Ferdi Kadioglu": "https://cdn.futbin.com/content/fifa25/img/players/235152.png",
     "Ferdi Kadığlu": "https://cdn.futbin.com/content/fifa25/img/players/235152.png",
 
-    "Aaron Ciammaglichella" : "https://images.fotmob.com/image_resources/playerimages/1436505.png",
+   "Aaron Ciammaglichella": "https://api.sofascore.app/api/v1/player/1114354/image",
 
     "Abde Ezzalzouli" : "https://assets.laliga.com/squad/2025/t185/p500745/2048x2225/p500745_t185_2025_1_001_000.png"
     }
