@@ -141,13 +141,8 @@ def get_team_logo(team_name):
 # --- 2. OYUNCU YÜZLERİ İÇİN API SİSTEMİ ---
 PLAYER_FACES = {
     "Erling Haaland": "https://resources.premierleague.com/premierleague/photos/players/250x250/p223094.png",
-   # Ferdi Kadıoğlu (Hata vermeyen güncel şeffaf PNG linki)
    
-    "Ferdi Kadıoğlu" : "https://cdn.futbin.com/content/fifa25/img/players/235152.png",
-    "Ferdi Kadioglu": "https://cdn.futbin.com/content/fifa25/img/players/235152.png",
-    "Ferdi Kadığlu": "https://cdn.futbin.com/content/fifa25/img/players/235152.png",
-
-   "Aaron Ciammaglichella": "https://api.sofascore.app/api/v1/player/1114354/image",
+   
 
     "Abde Ezzalzouli" : "https://assets.laliga.com/squad/2025/t185/p500745/2048x2225/p500745_t185_2025_1_001_000.png"
     }
