@@ -246,7 +246,7 @@ with st.sidebar.expander("Team Members", expanded=True):
     • <a href="https://www.linkedin.com/in/mustafa-d%C3%BC%C5%9F%C3%BCnceli-0139a822a/" target="_blank" style="color: #38BDF8; text-decoration: none;">Mustafa Düşünceli</a><br><br>
     • <a href="https://www.linkedin.com/in/ahmet-tar%C4%B1k-orhan/" target="_blank" style="color: #38BDF8; text-decoration: none;">Ahmet Tarık Orhan</a><br><br>
     • <a href="https://www.linkedin.com/in/ali-eren-kurt-0842a7333" target="_blank" style="color: #38BDF8; text-decoration: none;">Ali Eren Kurt</a><br><br>
-    • Ahmet Can Vurmaz
+    • <span style="color: #38BDF8;">Ahmet Can Vurmaz</span>
     """, unsafe_allow_html=True)
 
 st.sidebar.markdown("---")
