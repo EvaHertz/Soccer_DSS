@@ -141,7 +141,6 @@ def get_team_logo(team_name):
 # --- 2. OYUNCU YÜZLERİ İÇİN API SİSTEMİ ---
 PLAYER_FACES = {
     "Erling Haaland": "https://resources.premierleague.com/premierleague/photos/players/250x250/p223094.png",
-   # Ferdi Kadıoğlu (Hata vermeyen güncel şeffaf PNG linki)
    
     "Ferdi Kadıoğlu" :"https://raw.githubusercontent.com/EvaHertz/Soccer_DSS/refs/heads/main/image/FerdiKadığlu.png",
     "Ferdi Kadioglu": "https://raw.githubusercontent.com/EvaHertz/Soccer_DSS/refs/heads/main/image/FerdiKadığlu.png",
@@ -244,9 +243,9 @@ if sidebar_logo:
 st.sidebar.markdown('<p class="group-header">GROUP 6</p>', unsafe_allow_html=True)
 with st.sidebar.expander("Team Members", expanded=True):
     st.markdown("""
+    • <a href="https://www.linkedin.com/in/mustafa-d%C3%BC%C5%9F%C3%BCnceli-0139a822a/" target="_blank" style="color: #38BDF8; text-decoration: none;">Mustafa Düşünceli</a><br><br>
     • <a href="https://www.linkedin.com/in/ahmet-tar%C4%B1k-orhan/" target="_blank" style="color: #38BDF8; text-decoration: none;">Ahmet Tarık Orhan</a><br><br>
     • <a href="https://www.linkedin.com/in/ali-eren-kurt-0842a7333" target="_blank" style="color: #38BDF8; text-decoration: none;">Ali Eren Kurt</a><br><br>
-    • <a href="https://www.linkedin.com/in/mustafa-d%C3%BC%C5%9F%C3%BCnceli-0139a822a/" target="_blank" style="color: #38BDF8; text-decoration: none;">Mustafa Düşünceli</a><br><br>
     • Ahmet Can Vurmaz
     """, unsafe_allow_html=True)
 
